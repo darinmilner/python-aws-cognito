@@ -1,10 +1,10 @@
 #create glue catalog database
-resource "aws_glue_catalog_database" "glue_catalog_database" {
+resource "aws_glue_catalog_database" "glue-catalog-database" {
   name = "${var.glue_catalog_database_name}-${local.short-region}"
 }
 
 #create glue crawler
-resource "aws_glue_crawler" "glue_crawler" {
+resource "aws_glue_crawler" "glue-crawler" {
   database_name = var.glue_catalog_database_name
   name          = "${var.glue_crawler_name}-${local.short-region}"
   role          = aws_iam_role.glue-role.arn
@@ -21,12 +21,12 @@ resource "aws_glue_catalog_database" "redshift-catalog-database" {
 }
 
 #create redshift to glue crawler
-resource "aws_glue_crawler" "redshift_crawler" {
+resource "aws_glue_crawler" "redshift-crawler" {
   database_name = "${var.redshift_glue_catalog_database_name}-${local.short-region}"
   name          = var.redshift_glue_crawler_name
-  role          = module.iam_for_glue.glue_iam_arn
+  role          = aws_iam_role.glue-role.arn 
   jdbc_target {
     connection_name = aws_glue_connection.glue_jdbc_conn.name
-    path            = "dev/public/nsw_properties" #db schema and table name
+    path            = "dev/public/redshift-table" #db schema and table name
   }
 }
