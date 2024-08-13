@@ -65,3 +65,10 @@ class AWSCognito:
         )
 
         return response
+    
+    def logout(self, access_token: str):
+        response = self.client.global_sign_out(
+            AccessToken = access_token
+        )
+
+        return response 
