@@ -26,7 +26,7 @@ resource "aws_glue_crawler" "redshift-crawler" {
   name          = var.redshift_glue_crawler_name
   role          = aws_iam_role.glue-role.arn 
   jdbc_target {
-    connection_name = aws_glue_connection.glue_jdbc_conn.name
+    connection_name = aws_glue_connection.glue-jdbc-conn.name 
     path            = "dev/public/redshift-table" #db schema and table name
   }
 }

@@ -17,7 +17,7 @@ resource "aws_glue_connection" "glue-jdbc-conn" {
   }
   name = var.glue_jdbc_conn_name
   physical_connection_requirements {
-    availability_zone = aws_subnet.redshift-serverless-subnet-az1.availability_zone
+    availability_zone = "${var.region}a"
     security_group_id_list = [
       var.redshift-security-group-id,
     ]
