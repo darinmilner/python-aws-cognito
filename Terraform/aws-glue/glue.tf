@@ -24,9 +24,9 @@ resource "aws_glue_catalog_database" "redshift-catalog-database" {
 resource "aws_glue_crawler" "redshift-crawler" {
   database_name = "${var.redshift_glue_catalog_database_name}-${local.short-region}"
   name          = var.redshift_glue_crawler_name
-  role          = aws_iam_role.glue-role.arn 
+  role          = aws_iam_role.glue-role.arn
   jdbc_target {
-    connection_name = aws_glue_connection.glue-jdbc-conn.name 
+    connection_name = aws_glue_connection.glue-jdbc-conn.name
     path            = "dev/public/redshift-table" #db schema and table name
   }
 }

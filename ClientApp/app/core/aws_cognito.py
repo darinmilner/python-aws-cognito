@@ -72,3 +72,40 @@ class AWSCognito:
         )
 
         return response 
+
+
+    def confirm_forgot_password(self, data: ConfirmForgotPassword):
+        response = self.client.confirm_forgot_password(
+            ClientId=AWS_COGNITO_APP_CLIENT_ID,
+            Username=data.email,
+            ConfirmationCode=data.confirmation_code,
+            Password=data.new_password
+        )
+
+        return response
+
+    def change_password(self, data: ChangePassword):
+        response = self.client.change_password(
+            PreviousPassword=data.old_password,
+            ProposedPassword=data.new_password,
+            AccessToken=data.access_token,
+        )
+
+        return response
+    
+    def check_user_exists(self, email: EmailStr):
+        response = self.client.admin_get_user(
+            UserPoolId=AWS_COGNITO_USER_POOL_ID,
+            Username=email
+        )
+
+        return response
+    
+    
+    def resend_confirmation_code(self, email: EmailStr):
+        response = self.client.resend_confirmation_code(
+            ClientId=AWS_COGNITO_APP_CLIENT_ID,
+            Username=email
+        )
+
+        return response
