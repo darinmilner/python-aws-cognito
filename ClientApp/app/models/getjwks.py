@@ -2,10 +2,9 @@ import requests
 
 from dataclasses import dataclass
 from ..core.config import env_vars
-from .cognitojwt import JWKS
+
 
 JWK = dict[str, str]
-
 
 @dataclass
 class JWKS:

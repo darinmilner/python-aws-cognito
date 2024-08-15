@@ -5,7 +5,7 @@ import requests
 from dataclasses_json import dataclass_json
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import (  
-    OAuth2PasswordBearer,
+   # OAuth2PasswordBearer,
     HTTPAuthorizationCredentials,
     HTTPBearer,
 )
@@ -24,7 +24,6 @@ AWS_COGNITO_HOSTED_UI_CALLBACK_URL = env_vars.AWS_COGNITO_HOSTED_UI_CALLBACK_URL
 AWS_COGNITO_HOSTED_UI_LOGOUT_URL = env_vars.AWS_COGNITO_HOSTED_UI_LOGOUT_URL
 
 bearer_scheme = HTTPBearer()
-#bearer_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @dataclass_json
 @dataclass

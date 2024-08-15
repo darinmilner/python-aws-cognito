@@ -75,32 +75,7 @@ class AuthService:
                         status_code=500, detail="Internal Server")
             else:
                 return JSONResponse(content={"message": "Confirmation code sent successfully"}, status_code=200)
-
-    def user_signin(data: UserSignIn, cognito: AWSCognito):
-        try:
-            response = cognito.user_signin(data)
-            print(response)
-            id_token = response['AuthenticationResult']['IdToken']
-        except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == 'UserNotFoundException':
-                raise HTTPException(
-                    status_code=404, detail="The User deos not exist")
-            elif e.response['Error']['Code'] == 'UserNotConfirmedException':
-                raise HTTPException(
-                    status_code=403, detail="Please verify your account")
-            elif e.response['Error']['Code'] == 'NotAuthorizedException':
-                raise HTTPException(
-                    status_code=401, detail="Incorrect username or password")
-            else:
-                raise HTTPException(status_code=500, detail="Internal Server")
-        else:
-            content = {
-                "message": 'User signed in successfully',
-                "accessToken": response['AuthenticationResult']['AccessToken'],
-                "refreshToken": response['AuthenticationResult']['RefreshToken'],
-                "idToken" : id_token
-            }
-            return JSONResponse(content=content, status_code=200)
+            
 
     def forgot_password(email: EmailStr, cognito: AWSCognito):
         try:
@@ -173,23 +148,6 @@ class AuthService:
             }
             return JSONResponse(content=content, status_code=200)
 
-    def logout(access_token: str, cognito: AWSCognito):
-        try:
-            response = cognito.logout(access_token)
-        except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == 'InvalidParameterException':
-                raise HTTPException(
-                    status_code=400, detail="The Access token provided has wrong format")
-            elif e.response['Error']['Code'] == 'NotAuthorizedException':
-                raise HTTPException(
-                    status_code=401, detail="Invalid access token provided")
-            elif e.response['Error']['Code'] == 'TooManyRequestsException':
-                raise HTTPException(
-                    status_code=429, detail="Too many requests")
-            else:
-                raise HTTPException(status_code=500, detail="Internal Server")
-        else:
-            return
 
     def user_details(email: EmailStr, cognito: AWSCognito):
         try:
