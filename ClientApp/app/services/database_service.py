@@ -18,10 +18,8 @@ class DatabaseService:
         try:
             table = dynamodb.Table(env_vars.DB_NAME)
             items = table.scan()
-            print(items)
             return items
-        except botocore.exceptions.ClientError as e:
-            print("Error {e}")
+        except botocore.exceptions.ClientError:
             raise HTTPException(status_code=500, detail="Internal Server Error")
         
 
@@ -38,8 +36,6 @@ class DatabaseService:
             }
             item = json.loads(json.dumps(item), parse_float=Decimal)
             table.put_item(Item = item)
-            print(data)
-            return "data submitted successfully"
-        except botocore.exceptions.ClientError as e:
-            print("Error {e}")
+            return "New Product Created Successfully"
+        except botocore.exceptions.ClientError:
             raise HTTPException(status_code=500, detail="Internal Server Error")

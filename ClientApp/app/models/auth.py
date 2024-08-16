@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from fastapi.responses import RedirectResponse
 from  urllib  import parse as url_parse 
 import requests
 from dataclasses_json import dataclass_json
@@ -67,8 +67,8 @@ def get_user_from_session(request: Request) -> Credentials:
     if (c := request.session.get("user_credentials")) is None:
         raise HTTPException(
             status_code=status.HTTP_307_TEMPORARY_REDIRECT,
-            headers={"Location": request.url_for("index")},
-        )
+            headers={"Location": request.url_for("login")},
+        )      
     else:
         creds = Credentials.from_dict(c)
 

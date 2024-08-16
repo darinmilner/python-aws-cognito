@@ -3,7 +3,6 @@ from fastapi.responses import JSONResponse
 import botocore
 from pydantic import EmailStr
 
-
 from ..core.aws_cognito import AWSCognito
 from ..models.usermodel import ChangePassword, ConfirmForgotPassword, UserSignup, UserVerify
 
@@ -30,8 +29,7 @@ class AuthService:
 
     def verify_account(data: UserVerify, cognito: AWSCognito):
         try:
-            response = cognito.verify_account(data)
-            print(response)
+            cognito.verify_account(data)
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'CodeMismatchException':
                 raise HTTPException(
@@ -58,7 +56,7 @@ class AuthService:
                 raise HTTPException(
                     status_code=404, detail="User deos not exist")
             else:
-                raise HTTPException(status_code=500, detail="Internal Server")
+                raise HTTPException(status_code=500, detail="Internal Server Error")
         else:
             try:
                 response = cognito.resend_confirmation_code(email)
@@ -87,7 +85,7 @@ class AuthService:
                 raise HTTPException(
                     status_code=403, detail="Unverified account")
             else:
-                raise HTTPException(status_code=500, detail="Internal Server")
+                raise HTTPException(status_code=500, detail="Internal Server Error")
         else:
             return JSONResponse(content={"message": "Password reset code sent to your email address"}, status_code=200)
 
@@ -120,7 +118,7 @@ class AuthService:
                 raise HTTPException(
                     status_code=429, detail="Attempt limit exceeded, please try again later")
             else:
-                raise HTTPException(status_code=500, detail="Internal Server")
+                raise HTTPException(status_code=500, detail="Internal Server Error")
         else:
             return JSONResponse(content={"message": "Password changed successfully"}, status_code=200)
 
@@ -138,7 +136,7 @@ class AuthService:
                 raise HTTPException(
                     status_code=429, detail="Attempt limit exceeded, please try again later")
             else:
-                raise HTTPException(status_code=500, detail="Internal Server")
+                raise HTTPException(status_code=500, detail="Internal Server Error")
         else:
             content = {
                 "message": 'Refresh token generated successfully',
@@ -156,7 +154,7 @@ class AuthService:
                 raise HTTPException(
                     status_code=404, detail="User deos not exist")
             else:
-                raise HTTPException(status_code=500, detail="Internal Server")
+                raise HTTPException(status_code=500, detail="Internal Server Error")
         else:
             user = {}
             for attribute in response['UserAttributes']:

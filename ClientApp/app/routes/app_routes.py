@@ -2,7 +2,7 @@ import json
 import requests
 
 from fastapi import APIRouter, status, Depends, HTTPException, Request
-from fastapi.responses import  HTMLResponse,  RedirectResponse 
+from fastapi.responses import  HTMLResponse, RedirectResponse 
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating  import Jinja2Templates
 from pycognito import Cognito 
@@ -36,7 +36,6 @@ def prettify_json(data: dict) -> str:
 async def products(request: Request):
     if request.session.get("user_credentials"):
         items = db.get_all()
-        print(f"Items in DB {items}")
         ctx = {"request": request,  "items" :  items}
         return templates.TemplateResponse("products.html", ctx)
     ctx = {"request": request}
@@ -133,12 +132,18 @@ async def logout(request: Request):
        return RedirectResponse(url=url)
     return RedirectResponse(url="/")
 
+
 @app_router.get("/welcome", tags=["App"])
 async def welcome(
-    request: Request, credentials: Credentials = Depends(get_user_from_session)
+    request: Request
 ):
     ctx = {"request": request}
-    return templates.TemplateResponse("welcome.html", ctx)
+    if request.session.get("user_credentials"):
+        return templates.TemplateResponse("welcome.html", ctx)
+    
+    if (url := get_hosted_url("/oauth2/authorize")) is not None:
+        ctx["hosted_url"] = url
+    return templates.TemplateResponse("index.html", ctx)
 
 
 @app_router.get("/user-details", response_class=HTMLResponse,   tags=["App"])
