@@ -12,6 +12,6 @@ variable "password-length" {
 
 variable "callback-url" {
   description = "Default Callback URL"
-  type = string
-  default = "http://localhost:8000/callback"
+  type        = string
+  default     = "http://localhost:8000/callback"
 }

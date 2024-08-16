@@ -1,12 +1,12 @@
 resource "aws_cognito_identity_pool" "main-pool" {
-  identity_pool_name = "cognito-idp-${local.short-region}-${local.env}"
-  allow_classic_flow = false 
-  allow_unauthenticated_identities = false 
+  identity_pool_name               = "cognito-idp-${local.short-region}-${local.env}"
+  allow_classic_flow               = false
+  allow_unauthenticated_identities = false
 
   cognito_identity_providers {
-    server_side_token_check = true 
-    provider_name = aws_cognito_user_pool.userpool.endpoint
-    client_id = aws_cognito_user_pool_client.client-app.id 
+    server_side_token_check = true
+    provider_name           = aws_cognito_user_pool.userpool.endpoint
+    client_id               = aws_cognito_user_pool_client.client-app.id
   }
 }
 
@@ -60,9 +60,9 @@ resource "aws_cognito_user_pool_client" "client-app" {
   name = "Python-APP-API-Client"
 
   callback_urls                 = [var.callback-url]
-  logout_urls = [ "http://localhost:8000" ]
+  logout_urls                   = ["http://localhost:8000"]
   user_pool_id                  = aws_cognito_user_pool.userpool.id
-  generate_secret               = false 
+  generate_secret               = false
   refresh_token_validity        = 90
   prevent_user_existence_errors = "ENABLED"
 

@@ -11,7 +11,7 @@ output "userpool-id" {
 }
 
 output "userpool-name" {
-  value = aws_cognito_user_pool.userpool.name 
+  value = aws_cognito_user_pool.userpool.name
 }
 
 output "login-url" {

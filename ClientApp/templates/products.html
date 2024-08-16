@@ -17,7 +17,23 @@
                 </div>
             </div>
         </div>
-        <h2 class="text-lg leading-6 font-bold mb-2">We have 10 products in our shop</h2>
-        <h4 class="text-lg leading-6 font-bold mb-2">You can see them because you are authenticated by Cognito</h4>
+        <div class="text-lg leading-6 font-bold mb-2 mx-8">
+            <h2 class="my-2">We have {{ items.Items | length }} products in our shop</h2>
+            <h4 class="my-2">You can see them because you are authenticated by Cognito</h4>
+        </div>
+       
+        {% if items %}
+        <div class="pt-2 px-2 mb-6 bg-yellow-200 text-md m-8">
+            {% for item in items.Items %}
+            <li class="pb-2">{{item.name}}</li>
+            <li class="pb-2">{{item.price}}</li>
+            {% if items.Items | length > 1 %}
+                <br/>
+                <p> ************************************ </p>
+                <br/>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
     </body>
 </html>

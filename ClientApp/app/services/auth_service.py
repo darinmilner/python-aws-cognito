@@ -5,14 +5,13 @@ from pydantic import EmailStr
 
 
 from ..core.aws_cognito import AWSCognito
-from ..models.usermodel import ChangePassword, ConfirmForgotPassword, UserSignIn, UserSignup, UserVerify
+from ..models.usermodel import ChangePassword, ConfirmForgotPassword, UserSignup, UserVerify
 
 
 class AuthService:
     def user_signup(user: UserSignup, cognito: AWSCognito):
         try:
             response = cognito.user_signup(user)
-            print(response)
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'UsernameExistsException':
                 raise HTTPException(
@@ -47,7 +46,7 @@ class AuthService:
                 raise HTTPException(
                     status_code=200, detail="User already verified.")
             else:
-                raise HTTPException(status_code=500, detail="Internal Server")
+                raise HTTPException(status_code=500, detail="Internal Server Error")
         else:
             return JSONResponse(content={"message": "Account verification successful"}, status_code=200)
 

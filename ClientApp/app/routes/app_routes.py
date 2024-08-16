@@ -9,7 +9,7 @@ from pycognito import Cognito
 from pycognito.exceptions import ForceChangePasswordException 
 from app.models.auth import Credentials, get_credentials_from_token, get_user_from_session, get_hosted_url 
 from app.core.config import env_vars
-
+from app.services.database_service import DatabaseService as db
 
 AWS_DEFAULT_REGION = env_vars.AWS_REGION
 AWS_COGNITO_CLIENT_ID = env_vars.AWS_COGNITO_APP_CLIENT_ID
@@ -35,13 +35,21 @@ def prettify_json(data: dict) -> str:
 @app_router.get("/products", tags=["App"])
 async def products(request: Request):
     if request.session.get("user_credentials"):
-        template_ctx = {"request": request}
-        return templates.TemplateResponse("products.html", template_ctx)
-    template_ctx = {"request": request}
+        items = db.get_all()
+        print(f"Items in DB {items}")
+        ctx = {"request": request,  "items" :  items}
+        return templates.TemplateResponse("products.html", ctx)
+    ctx = {"request": request}
     if (url := get_hosted_url("/oauth2/authorize")) is not None:
-        template_ctx["hosted_url"] = url
-    return templates.TemplateResponse("index.html", template_ctx)
+        ctx["hosted_url"] = url
+    return templates.TemplateResponse("index.html", ctx)
 
+ 
+@app_router.post("/add-product",status_code=status.HTTP_201_CREATED, tags=["App"]) 
+async def create_product(request: Request,  data: dict):
+    if request.session.get("user_credentials"):
+        msg = await db.create(data)
+        return {"message": msg}
     
     
 @app_router.get("/", tags=["Auth"])
@@ -71,7 +79,7 @@ async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends
             "index.html",
             {"request": request, "errors": ["Incorrect username or password"]},
         )
-    except Exception as e:
+    except Exception:
         return templates.TemplateResponse(
             "index.html", {"request": request, "errors": ["Something went wrong"]}
         )
@@ -129,8 +137,8 @@ async def logout(request: Request):
 async def welcome(
     request: Request, credentials: Credentials = Depends(get_user_from_session)
 ):
-    template_ctx = {"request": request}
-    return templates.TemplateResponse("welcome.html", template_ctx)
+    ctx = {"request": request}
+    return templates.TemplateResponse("welcome.html", ctx)
 
 
 @app_router.get("/user-details", response_class=HTMLResponse,   tags=["App"])
@@ -151,11 +159,7 @@ async def user_details(
             "roles" : roles,
         },
     )
-
-
-
-
-
+    
 
 # This endpoint requires the access token to be passed in the Authorization header,
 # as an alternative to using session cookies.

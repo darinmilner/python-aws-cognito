@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     CLIENT_SECRET : str 
     AWS_COGNITO_HOSTED_UI_CALLBACK_URL : str 
     AWS_COGNITO_HOSTED_UI_LOGOUT_URL : str 
+    DB_NAME: str 
     
     model_config = SettingsConfigDict(env_file=".env")
     
