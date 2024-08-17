@@ -17,7 +17,7 @@ class AuthService:
                     status_code=409, detail="An account with the given email already exists")
             else:
                 print(e)
-                raise HTTPException(status_code=500, detail="Internal Server")
+                raise HTTPException(status_code=500, detail=f"Internal Server Error {e}")
         else:
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 content = {

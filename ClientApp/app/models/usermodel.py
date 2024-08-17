@@ -1,6 +1,7 @@
 from typing import Annotated
 from annotated_types import MinLen, MaxLen
-from pydantic import BaseModel, EmailStr, Field 
+from pydantic import BaseModel, EmailStr, Field
+
 
 class UserSignup(BaseModel):
     fullname: str = Field(max_length = 50)

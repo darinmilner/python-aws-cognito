@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block title %}
-<title>Login Page</title>
+<title>Registration Page</title>
 {% endblock %}
 {% block content %}
 <body class="min-h-screen bg-gray-100 py-6 flex flex-col justify-center">
     <div class="relative px-8 pt-6 pb-8 mb-4 flex flex-col bg-white shadow-lg max-w-xl mx-auto rounded" id="container">
         <h1 class="pb-6 text-base leading-6 font-bold text-xl">FastAPI And Cognito</h1>
-        <p class="pb-4 text-sm">Login</p>
+        <p class="pb-4 text-sm">Signup for an account</p>
         {% if errors %}
         <div class="pt-2 px-2 mb-6 bg-red-200 text-sm">
             {% for error in errors %}
@@ -14,10 +14,14 @@
             {% endfor %}
         </div>
         {% endif %}
-        <form class="p-4 bg-blue-50 rounded" action="{{ url_for('login') }}" method="POST">
+        <form class="p-4 bg-blue-50 rounded" action="{{ url_for('register') }}" method="POST">
             <div class="mb-4">
-                <label class="block text-grey-darker text-sm font-bold mb-2" for="username">Username or Email</label>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker" name="username" id="username" type="text" placeholder="Username">
+                <label class="block text-grey-darker text-sm font-bold mb-2" for="username">Username</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker" name="username" id="username" type="text" placeholder="username">
+            </div>
+            <div class="mb-4">
+                <label class="block text-grey-darker text-sm font-bold mb-2" for="email">Email</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker" name="email" id="email" type="text" placeholder="email">
             </div>
             <div class="mb-6">
                 <label class="block text-grey-darker text-sm font-bold mb-2" for="password">Password</label>
@@ -37,7 +41,7 @@
         {% if hosted_url %}
         <div class="p-5 bg-blue-50 rounded">
             <!--<p class="font-bold">Cognito hosted UI</p>-->
-            <p class="text-sm">Alternatively, you can login via the Cognito hosted UI (if configured)</p>
+            <p class="text-sm">Alternatively, you can register via the Cognito hosted UI (if configured)</p>
             <div class="flex items-center justify-between pt-5"><a class="bg-blue-500 hover:bg-blue-dark text-white font-bold py-2 px-4 rounded" href="{{ hosted_url }}">Go to Cognito login</a></div>
         </div>
         {% endif %}

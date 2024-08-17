@@ -1,15 +1,20 @@
 import json
 import requests
 
-from fastapi import APIRouter, status, Depends, HTTPException, Request
+from fastapi import APIRouter, status, Depends, HTTPException, Request, Form
 from fastapi.responses import  HTMLResponse, RedirectResponse 
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating  import Jinja2Templates
+from pydantic import EmailStr
 from pycognito import Cognito 
 from pycognito.exceptions import ForceChangePasswordException 
 from app.models.auth import Credentials, get_credentials_from_token, get_user_from_session, get_hosted_url 
 from app.core.config import env_vars
+from ..core.dependencies  import  get_aws_cognito
 from app.services.database_service import DatabaseService as db
+from app.models.usermodel import UserSignup
+from app.services.auth_service import AuthService
+
 
 AWS_DEFAULT_REGION = env_vars.AWS_REGION
 AWS_COGNITO_CLIENT_ID = env_vars.AWS_COGNITO_APP_CLIENT_ID
@@ -55,10 +60,31 @@ async def create_product(request: Request,  data: dict):
 async def index(request: Request):
     if request.session.get("user_credentials"):
         return RedirectResponse(url="/welcome", status_code=status.HTTP_303_SEE_OTHER)
-    template_ctx = {"request": request}
+    ctx = {"request": request}
     if (url := get_hosted_url("/oauth2/authorize")) is not None:
-        template_ctx["hosted_url"] = url
-    return templates.TemplateResponse("index.html", template_ctx)
+        ctx["hosted_url"] = url
+    return templates.TemplateResponse("index.html", ctx)
+
+
+@app_router.get("/register")
+def signup(request: Request):
+    ctx = {"request": request}
+    return templates.TemplateResponse("register.html", ctx)
+
+
+@app_router.post("/register", status_code=status.HTTP_201_CREATED)
+async def register(request: Request, username: str = Form(...),  password: str = Form(...), email: EmailStr = Form(...)):
+   
+    print(f"email {email}")
+    errors = []
+
+    user = UserSignup(email=email, password=password, fullname=username, role="user")
+    response = AuthService.user_signup(user, get_aws_cognito())
+    print(prettify_json(response))
+   
+    #return RedirectResponse("/index")
+    return response
+   
 
 # Local login endpoint
 @app_router.post("/login", tags=["Auth"])
