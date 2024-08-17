@@ -11,7 +11,7 @@ resource "aws_cognito_identity_pool" "main-pool" {
 }
 
 resource "aws_cognito_user_pool" "userpool" {
-  name = "app-userpool-${local.short-region}"
+  name = "${var.userpool-name}-${local.short-region}"
 
   username_attributes      = ["email"]
   auto_verified_attributes = ["email"]
