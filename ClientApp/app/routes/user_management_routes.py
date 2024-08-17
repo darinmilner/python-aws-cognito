@@ -2,19 +2,13 @@ from fastapi import APIRouter, status, Depends
 from pydantic import EmailStr
 
 
-from ..models.usermodel import AccessToken, ChangePassword, ConfirmForgotPassword, RefreshToken, UserSignIn, UserSignup, UserVerify
+from ..models.usermodel import ChangePassword, ConfirmForgotPassword, RefreshToken, UserVerify
 from ..services.auth_service import AuthService
 from ..core.aws_cognito import AWSCognito
 from ..core.dependencies import get_aws_cognito
 
 
 management_router = APIRouter(prefix="/api/v1/auth")
-
-
-# USER SIGNUP
-@management_router.post('/signup', status_code=status.HTTP_201_CREATED, tags=["Account Management"])
-async def signup_user(user: UserSignup, cognito: AWSCognito = Depends(get_aws_cognito)):
-    return AuthService.user_signup(user, cognito)
 
 # GET USER DETAILS
 @management_router.get('/userdetails', status_code=status.HTTP_200_OK, tags=["Account Management"])

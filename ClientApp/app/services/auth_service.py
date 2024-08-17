@@ -7,24 +7,10 @@ from ..core.aws_cognito import AWSCognito
 from ..models.usermodel import ChangePassword, ConfirmForgotPassword, UserSignup, UserVerify
 
 
-class AuthService:
+class AuthService:  
     def user_signup(user: UserSignup, cognito: AWSCognito):
-        try:
-            response = cognito.user_signup(user)
-        except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == 'UsernameExistsException':
-                raise HTTPException(
-                    status_code=409, detail="An account with the given email already exists")
-            else:
-                print(e)
-                raise HTTPException(status_code=500, detail=f"Internal Server Error {e}")
-        else:
-            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                content = {
-                    "message": "User created successfully",
-                    "sub": response["UserSub"]
-                }
-                return JSONResponse(content=content, status_code=201)
+        response = cognito.user_signup(user)
+        return response
 
 
     def verify_account(data: UserVerify, cognito: AWSCognito):

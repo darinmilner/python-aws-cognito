@@ -1,6 +1,6 @@
 import json
 import requests
-
+import botocore
 from fastapi import APIRouter, status, Depends, HTTPException, Request, Form
 from fastapi.responses import  HTMLResponse, RedirectResponse 
 from fastapi.security import OAuth2PasswordRequestForm
@@ -14,7 +14,7 @@ from ..core.dependencies  import  get_aws_cognito
 from app.services.database_service import DatabaseService as db
 from app.models.usermodel import UserSignup
 from app.services.auth_service import AuthService
-
+from pydantic.error_wrappers import ValidationError 
 
 AWS_DEFAULT_REGION = env_vars.AWS_REGION
 AWS_COGNITO_CLIENT_ID = env_vars.AWS_COGNITO_APP_CLIENT_ID
@@ -74,18 +74,33 @@ def signup(request: Request):
 
 @app_router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register(request: Request, username: str = Form(...),  password: str = Form(...), email: EmailStr = Form(...)):
-   
-    print(f"email {email}")
     errors = []
-
-    user = UserSignup(email=email, password=password, fullname=username, role="user")
-    response = AuthService.user_signup(user, get_aws_cognito())
-    print(prettify_json(response))
-   
-    #return RedirectResponse("/index")
-    return response
-   
-
+    ctx = {"request": request}
+    try:
+        print(f"email {email}")
+        
+        user = UserSignup(email=email, password=password, fullname=username, role="user")
+        AuthService.user_signup(user, get_aws_cognito())
+        #TODO: Make account verification page
+        return RedirectResponse("/")
+    except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == 'UsernameExistsException':
+                errors.append("An account with the given email already exists")
+                ctx["errors"] = errors
+                return templates.TemplateResponse("register.html", ctx)
+            else:
+                errors.append("Please input a valid email or password")
+                ctx["errors"] = errors
+                return templates.TemplateResponse("register.html", ctx)
+    except ValidationError as e:
+        errors.append("Please input a valid email or password")
+        errors_list = json.loads(e.json())
+        for item in errors_list:
+            errors.append(item.get("loc")[0] + ": " + item.get("msg"))
+        ctx["errors"]  = errors
+        return templates.TemplateResponse("register.html", ctx)
+    
+     
 # Local login endpoint
 @app_router.post("/login", tags=["Auth"])
 async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
