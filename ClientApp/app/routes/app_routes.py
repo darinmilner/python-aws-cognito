@@ -55,8 +55,26 @@ async def create_product(request: Request,  data: dict):
     if request.session.get("user_credentials"):
         msg = await db.create(data)
         return {"message": msg}
-    
-    
+   
+@app_router.get("/product/{name}", tags=["App"])
+async def get_product_by_name(request: Request, name: str):
+    if request.session.get("user_credentials"):
+        item = db.get_product_by_name(name)
+        if item is None:
+            raise HTTPException(status_code=404, detail="Item not found")
+        return item 
+    else:
+        raise HTTPException(status_code=401, detail="Unauthorized Access")
+  
+@app_router.delete("/product/{name}", tags=["App"])
+async def delete_product_by_name(request: Request, name: str):
+    if request.session.get("user_credentials"):
+        item = db.delete_product_by_name(name) 
+        if item is None:
+            raise HTTPException(status_code=404, detail="Item not found")
+        return {"message": f"{item} deleted successfully"}
+    else:
+        raise HTTPException(status_code=401, detail="Unauthorized Access")
 @app_router.get("/", tags=["Auth"])
 async def index(request: Request):
     if request.session.get("user_credentials"):

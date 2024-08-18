@@ -39,13 +39,54 @@ class DatabaseService:
         
         try:
             table = dynamodb.Table(env_vars.DB_NAME)
-            # TODO: create a function that returns the current time and create a UI HTML page to create a product and get a product by 
-            # TODO: name and by id
-            now = time.time()
-            current_time = Decimal(now)
+            current_time = get_current_time()
+            print(current_time)
             product = Product(name=data["name"], description=data["description"], price=int(data["price"]), id=str(uuid.uuid4()), created_at=current_time, updated_at=current_time)
        
             table.put_item(Item = product.dict())
             return "New Product Created Successfully"
-        except botocore.exceptions.ClientError:
+        except botocore.exceptions.ClientError as e:
+            print(e)
             raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+    def get_product_by_name(name: str):
+        try:
+            table =dynamodb.Table(env_vars.DB_NAME)
+            response = table.scan(
+            FilterExpression=boto3.dynamodb.conditions.Attr("name").eq(name)
+        )
+            if 'Items' in response:
+                return response['Items']
+            else:
+                return None
+
+        except botocore.exceptions.ClientError as e:
+            print(e)
+            raise HTTPException(status_code=500, detail="Internal Server Error")
+    
+    def delete_product_by_name(name: str):
+        try:
+            table = dynamodb.Table(env_vars.DB_NAME)
+            response = table.scan(
+                FilterExpression=boto3.dynamodb.conditions.Attr("name").eq(name)
+            )
+            if 'Items' in response and response['Items']:
+                item_to_delete = response['Items'][0]
+                primary_key_value = item_to_delete["id"]
+                delete_response = table.delete_item(
+                    Key = {
+                        "id": primary_key_value
+                    }
+                )
+                return item_to_delete
+            else:
+                return {"message": "Item not found"}
+        except botocore.exceptions.ClientError as e:
+            print(e)
+            raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+# gets currents time 
+def get_current_time():
+    now = time.time()
+    return Decimal(now)
