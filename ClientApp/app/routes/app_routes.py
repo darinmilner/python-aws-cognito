@@ -66,23 +66,21 @@ async def index(request: Request):
     return templates.TemplateResponse("index.html", ctx)
 
 
-@app_router.get("/register")
+@app_router.get("/register",  tags=["Auth"])
 def signup(request: Request):
     ctx = {"request": request}
     return templates.TemplateResponse("register.html", ctx)
 
 
-@app_router.post("/register", status_code=status.HTTP_201_CREATED)
+@app_router.post("/register")
 async def register(request: Request, username: str = Form(...),  password: str = Form(...), email: EmailStr = Form(...)):
     errors = []
     ctx = {"request": request}
     try:
-        print(f"email {email}")
-        
         user = UserSignup(email=email, password=password, fullname=username, role="user")
         AuthService.user_signup(user, get_aws_cognito())
         #TODO: Make account verification page
-        return RedirectResponse("/")
+        return RedirectResponse("index.html", status_code=status.HTTP_303_SEE_OTHER)
     except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'UsernameExistsException':
                 errors.append("An account with the given email already exists")
@@ -98,7 +96,7 @@ async def register(request: Request, username: str = Form(...),  password: str =
         for item in errors_list:
             errors.append(item.get("loc")[0] + ": " + item.get("msg"))
         ctx["errors"]  = errors
-        return templates.TemplateResponse("register.html", ctx)
+        return templates.TemplateResponse("register.html",status_code=status.HTTP_400_BAD_REQUEST, context= ctx)
     
      
 # Local login endpoint

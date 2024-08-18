@@ -1,7 +1,5 @@
 from dataclasses import dataclass
-from fastapi.responses import RedirectResponse
 from  urllib  import parse as url_parse 
-import requests
 from dataclasses_json import dataclass_json
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import (  

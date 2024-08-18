@@ -4,6 +4,7 @@ import time
 import uuid
 import json 
 
+from models.database import Product
 from decimal import Decimal
 from fastapi import HTTPException
 from app.core.config import env_vars
@@ -27,6 +28,7 @@ class DatabaseService:
         try:
             table = dynamodb.Table(env_vars.DB_NAME)
             now = time.time()
+            product = Product()
             item = {
                 "id": str(uuid.uuid4()),
                 "name": data["name"],
