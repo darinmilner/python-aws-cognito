@@ -16,6 +16,7 @@ from app.models.usermodel import UserSignup
 from app.services.auth_service import AuthService
 from pydantic.error_wrappers import ValidationError 
 
+
 AWS_DEFAULT_REGION = env_vars.AWS_REGION
 AWS_COGNITO_CLIENT_ID = env_vars.AWS_COGNITO_APP_CLIENT_ID
 AWS_COGNITO_POOL_ID = env_vars.AWS_COGNITO_USER_POOL_ID

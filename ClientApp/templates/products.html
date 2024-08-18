@@ -25,6 +25,7 @@
                 <tr>
                     <th class="border-2 w-80 border-black">Name</th>
                     <th class="border-2 w-80 border-black">Price</th>
+                    <th class="border-2 w-80 border-black">Description</th>
                 </tr>
             </thead>
         {% for item in items.Items %}
@@ -32,6 +33,7 @@
             <tr>
                 <td class="border-2 w-80 border-black">{{item.name}}</td>
                 <td class="border-2 w-80 border-black">{{item.price}}</td>
+                <td class="border-2 w-80 border-black">{{item.description}}</td>
             </tr>
         {% endfor %}
     
