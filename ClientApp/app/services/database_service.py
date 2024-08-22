@@ -53,7 +53,7 @@ class DatabaseService:
         try:
             table =dynamodb.Table(env_vars.DB_NAME)
             response = table.scan(
-            FilterExpression=boto3.dynamodb.conditions.Attr("name").eq(name)
+                FilterExpression=boto3.dynamodb.conditions.Attr("name").eq(name)
         )
             if 'Items' in response:
                 return response['Items']
@@ -63,6 +63,7 @@ class DatabaseService:
         except botocore.exceptions.ClientError as e:
             print(e)
             raise HTTPException(status_code=500, detail="Internal Server Error")
+    
     
     def delete_product_by_name(name: str):
         try:
@@ -78,7 +79,7 @@ class DatabaseService:
                         "id": primary_key_value
                     }
                 )
-                return item_to_delete
+                return delete_response
             else:
                 return {"message": "Item not found"}
         except botocore.exceptions.ClientError as e:

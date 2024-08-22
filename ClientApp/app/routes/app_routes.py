@@ -1,20 +1,16 @@
 import json
 import requests
-import botocore
-from fastapi import APIRouter, status, Depends, HTTPException, Request, Form
+
+from fastapi import APIRouter, status, Depends, HTTPException, Request
 from fastapi.responses import  HTMLResponse, RedirectResponse 
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating  import Jinja2Templates
-from pydantic import EmailStr
 from pycognito import Cognito 
 from pycognito.exceptions import ForceChangePasswordException 
 from app.models.auth import Credentials, get_credentials_from_token, get_user_from_session, get_hosted_url 
 from app.core.config import env_vars
-from ..core.dependencies  import  get_aws_cognito
 from app.services.database_service import DatabaseService as db
-from app.models.usermodel import UserSignup
-from app.services.auth_service import AuthService
-from pydantic.error_wrappers import ValidationError 
+
 
 
 AWS_DEFAULT_REGION = env_vars.AWS_REGION
@@ -56,6 +52,7 @@ async def create_product(request: Request,  data: dict):
         msg = await db.create(data)
         return {"message": msg}
    
+   
 @app_router.get("/product/{name}", tags=["App"])
 async def get_product_by_name(request: Request, name: str):
     if request.session.get("user_credentials"):
@@ -65,6 +62,7 @@ async def get_product_by_name(request: Request, name: str):
         return item 
     else:
         raise HTTPException(status_code=401, detail="Unauthorized Access")
+ 
   
 @app_router.delete("/product/{name}", tags=["App"])
 async def delete_product_by_name(request: Request, name: str):
@@ -72,9 +70,11 @@ async def delete_product_by_name(request: Request, name: str):
         item = db.delete_product_by_name(name) 
         if item is None:
             raise HTTPException(status_code=404, detail="Item not found")
-        return {"message": f"{item} deleted successfully"}
+        return {"message": f"{name} deleted successfully"}
     else:
         raise HTTPException(status_code=401, detail="Unauthorized Access")
+    
+# TODO: move to auth routes   
 @app_router.get("/", tags=["Auth"])
 async def index(request: Request):
     if request.session.get("user_credentials"):
@@ -83,41 +83,9 @@ async def index(request: Request):
     if (url := get_hosted_url("/oauth2/authorize")) is not None:
         ctx["hosted_url"] = url
     return templates.TemplateResponse("index.html", ctx)
-
-
-@app_router.get("/register",  tags=["Auth"])
-def signup(request: Request):
-    ctx = {"request": request}
-    return templates.TemplateResponse("register.html", ctx)
-
-
-@app_router.post("/register")
-async def register(request: Request, username: str = Form(...),  password: str = Form(...), email: EmailStr = Form(...)):
-    errors = []
-    ctx = {"request": request}
-    try:
-        user = UserSignup(email=email, password=password, fullname=username, role="user")
-        AuthService.user_signup(user, get_aws_cognito())
-        #TODO: Make account verification page
-        return RedirectResponse("index.html", status_code=status.HTTP_303_SEE_OTHER)
-    except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == 'UsernameExistsException':
-                errors.append("An account with the given email already exists")
-                ctx["errors"] = errors
-                return templates.TemplateResponse("register.html", ctx)
-            else:
-                errors.append("Please input a valid email or password")
-                ctx["errors"] = errors
-                return templates.TemplateResponse("register.html", ctx)
-    except ValidationError as e:
-        errors.append("Please input a valid email or password")
-        errors_list = json.loads(e.json())
-        for item in errors_list:
-            errors.append(item.get("loc")[0] + ": " + item.get("msg"))
-        ctx["errors"]  = errors
-        return templates.TemplateResponse("register.html",status_code=status.HTTP_400_BAD_REQUEST, context= ctx)
-    
-     
+  
+  
+# TODO: move to auth routes
 # Local login endpoint
 @app_router.post("/login", tags=["Auth"])
 async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
@@ -179,7 +147,7 @@ async def callback(request: Request):
     request.session["used_hosted"] = True
     return RedirectResponse(url="/welcome")
 
-
+# TODO: move to auth routes
 @app_router.get("/logout", tags={"Auth"})
 async def logout(request: Request):
     request.session.pop("user_credentials", None)
@@ -203,7 +171,7 @@ async def welcome(
         ctx["hosted_url"] = url
     return templates.TemplateResponse("index.html", ctx)
 
-
+# TODO: move to user_management
 @app_router.get("/user-details", response_class=HTMLResponse,   tags=["App"])
 async def user_details(
     request: Request, credentials: Credentials = Depends(get_user_from_session)
@@ -223,12 +191,3 @@ async def user_details(
         },
     )
     
-
-# This endpoint requires the access token to be passed in the Authorization header,
-# as an alternative to using session cookies.
-# `curl http://{host}:{port}/protected -H "Authorization: Bearer {access_token}"`
-@app_router.get("/protected")
-async def protected(
-    credentials: Credentials = Depends(get_credentials_from_token),
-):
-    return credentials

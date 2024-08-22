@@ -15,7 +15,8 @@ class AuthService:
 
     def verify_account(data: UserVerify, cognito: AWSCognito):
         try:
-            cognito.verify_account(data)
+            response = cognito.verify_account(data)
+            print(response)
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'CodeMismatchException':
                 raise HTTPException(
