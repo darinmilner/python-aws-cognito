@@ -51,7 +51,7 @@ async def verify_account(
 # FORGOT PASSWORD
 @management_router.post('/forgot-password', status_code=status.HTTP_200_OK, tags=["Account Management"])
 async def forgot_password(email: EmailStr, cognito: AWSCognito = Depends(get_aws_cognito)):
-    return AuthService.forgot_password(email, cognito)
+    return AuthService.change_password(email, cognito)
 
 
 # CONFIRM FORGOT PASSWORD

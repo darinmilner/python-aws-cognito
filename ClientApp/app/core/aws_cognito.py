@@ -73,6 +73,13 @@ class AWSCognito:
 
         return response 
 
+    def forgot_password(self, email: EmailStr):
+        response = self.client.forgot_password(
+            clientId = AWS_COGNITO_APP_CLIENT_ID,
+            Username = email
+        )
+        
+        return response
 
     def confirm_forgot_password(self, data: ConfirmForgotPassword):
         response = self.client.confirm_forgot_password(
