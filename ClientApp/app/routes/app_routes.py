@@ -12,7 +12,6 @@ from app.core.config import env_vars
 from app.services.database_service import DatabaseService as db
 
 
-
 AWS_DEFAULT_REGION = env_vars.AWS_REGION
 AWS_COGNITO_CLIENT_ID = env_vars.AWS_COGNITO_APP_CLIENT_ID
 AWS_COGNITO_POOL_ID = env_vars.AWS_COGNITO_USER_POOL_ID
@@ -23,11 +22,6 @@ AWS_COGNITO_HOSTED_UI_LOGOUT_URL = env_vars.AWS_COGNITO_HOSTED_UI_LOGOUT_URL
 templates =  Jinja2Templates(directory="templates")
 
 app_router = APIRouter(prefix="")
-
-
-@app_router.get("/health", status_code=status.HTTP_200_OK, tags=["Health Check"])
-async def health():
-    return {"message": "Hello from the Auth Service"}
 
 
 def prettify_json(data: dict) -> str:

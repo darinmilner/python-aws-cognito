@@ -20,6 +20,7 @@ resource "aws_dynamodb_table" "db-table" {
     type = "N"
   }
 
+# change secondary index
   global_secondary_index {
     name               = "product-name-index"
     hash_key           = "name"
@@ -35,3 +36,5 @@ resource "aws_dynamodb_table" "db-table" {
     Environment = local.env
   }
 }
+
+# TODO: ADD DB Autoscaling

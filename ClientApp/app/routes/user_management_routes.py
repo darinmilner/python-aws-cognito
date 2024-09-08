@@ -9,7 +9,7 @@ from ..core.aws_cognito import AWSCognito
 from ..core.dependencies import get_aws_cognito
 
 templates =  Jinja2Templates(directory="templates")
-management_router = APIRouter(prefix="/api/v1/user")
+management_router = APIRouter(prefix="/api")
 
 # GET USER DETAILS
 @management_router.get('/userdetails', status_code=status.HTTP_200_OK, tags=["Account Management"])
