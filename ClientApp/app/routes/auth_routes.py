@@ -25,7 +25,7 @@ AWS_COGNITO_HOSTED_UI_CALLBACK_URL = env_vars.AWS_COGNITO_HOSTED_UI_CALLBACK_URL
 AWS_COGNITO_HOSTED_UI_LOGOUT_URL = env_vars.AWS_COGNITO_HOSTED_UI_LOGOUT_URL
 
 templates =  Jinja2Templates(directory="templates")
-auth_router = APIRouter(prefix="/api")
+auth_router = APIRouter(prefix="")
 
 
 @auth_router.get("/register",  tags=["Auth"])
@@ -59,11 +59,16 @@ async def register(request: Request, username: str = Form(...),  password: str =
             errors.append(item.get("loc")[0] + ": " + item.get("msg"))
         ctx["errors"]  = errors
         return templates.TemplateResponse("register.html",status_code=status.HTTP_400_BAD_REQUEST, context= ctx)
-  
+
+# TODO: move to user management  
 @auth_router.get("/input-code",  tags=["Auth"])   
 def input_code(request: Request):
     ctx = {"request": request}
+    if request.session.get("user_credentials"):
+        return RedirectResponse(url="/welcome", status_code=status.HTTP_303_SEE_OTHER)
+    ctx = {"request": request}
     return templates.TemplateResponse("input-code.html", ctx)
+
 
 @auth_router.get("/", tags=["Auth"])
 async def index(request: Request):
@@ -151,8 +156,16 @@ async def forgot_password(request: Request, email:EmailStr = Form(...)):
     c = Cognito(AWS_COGNITO_POOL_ID, AWS_COGNITO_CLIENT_ID, username=email)
     try:
         c.forgot_password(email)
-    except Exception as e:
+    except botocore.exceptions.ClientError as e:
         print(e)
+        if e.response['Error']['Code'] == 'UserNotFoundException':
+            raise HTTPException(
+                status_code=404, detail="User deos not exist")
+        elif e.response['Error']['Code'] == 'InvalidParameterException':
+            raise HTTPException(
+                status_code=403, detail="Unverified account")
+        else:
+            raise HTTPException(status_code=500, detail="Internal Server Error")
         return templates.TemplateResponse(
             "forgotpassword.html", {"request": request, "errors": ["Something went wrong"]}
         )
@@ -160,9 +173,16 @@ async def forgot_password(request: Request, email:EmailStr = Form(...)):
 
 #Get function for password change endpoint
 @auth_router.get("/forgot-password", tags = ["Auth"])
-async def forgot_password(request: Request):
+async def display_forgot_password(request: Request):
     ctx = {"request": request}
     return templates.TemplateResponse("forgotpassword.html", ctx)
+
+
+#Get function for password change endpoint
+@auth_router.get("/forgot-password/code", tags = ["Auth"])
+async def display_forgot_password_code(request: Request):
+    ctx = {"request": request}
+    return templates.TemplateResponse("forgotpasswordcode.html", ctx)
 
 #Get Code function for password change endpoint
 @auth_router.post("/forgot-password/code", tags = ["Auth"])
@@ -174,10 +194,3 @@ async def forgot_password_code(request: Request, email:EmailStr = Form(...), cod
         return templates.TemplateResponse(
             "forgotpassword.html", {"request": request, "errors": ["Something went wrong"]}
         )
-
-
-#Get function for password change endpoint
-@auth_router.get("/forgot-password/code", tags = ["Auth"])
-async def forgot_password_code(request: Request):
-    ctx = {"request": request}
-    return templates.TemplateResponse("forgotpasswordcode.html", ctx)

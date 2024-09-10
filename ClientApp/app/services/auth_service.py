@@ -12,7 +12,6 @@ class AuthService:
         response = cognito.user_signup(user)
         return response
 
-
     def verify_account(data: UserVerify, cognito: AWSCognito):
         try:
             response = cognito.verify_account(data)

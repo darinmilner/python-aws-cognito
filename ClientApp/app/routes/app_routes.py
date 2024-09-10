@@ -1,11 +1,9 @@
 import json
-import requests
 
 from fastapi import APIRouter, status, Depends, HTTPException, Request
-from fastapi.responses import  HTMLResponse, RedirectResponse 
+from fastapi.responses import  HTMLResponse 
 from fastapi.templating  import Jinja2Templates
-from pycognito import Cognito 
-from app.models.auth import Credentials, get_credentials_from_token, get_user_from_session, get_hosted_url 
+from app.models.auth import Credentials, get_user_from_session, get_hosted_url 
 from app.core.config import env_vars
 from app.services.database_service import DatabaseService as db
 

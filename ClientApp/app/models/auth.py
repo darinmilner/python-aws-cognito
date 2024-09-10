@@ -80,7 +80,6 @@ async def get_credentials_from_token(
     token: str = Depends(get_token_from_bearer),
 ) -> Credentials:
     message, signature = token.rsplit(".", 1)
-    print(message)
     try:
         credentials = Credentials(
             jwt_token=token,

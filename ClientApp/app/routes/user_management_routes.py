@@ -9,21 +9,12 @@ from ..core.aws_cognito import AWSCognito
 from ..core.dependencies import get_aws_cognito
 
 templates =  Jinja2Templates(directory="templates")
-management_router = APIRouter(prefix="/api")
+management_router = APIRouter(prefix="")
 
 # GET USER DETAILS
 @management_router.get('/userdetails', status_code=status.HTTP_200_OK, tags=["Account Management"])
 async def user_details(email: EmailStr, cognito: AWSCognito = Depends(get_aws_cognito)):
     return AuthService.user_details(email, cognito)
-
-
-@management_router.get("/code", tags=["Account Management"])
-async def input_code(request: Request):
-    ctx = {"request": request}
-    if request.session.get("user_credentials"):
-        return RedirectResponse(url="/welcome", status_code=status.HTTP_303_SEE_OTHER)
-   
-    return templates.TemplateResponse("input-code.html", ctx)
 
 
 @management_router.post("/code")
