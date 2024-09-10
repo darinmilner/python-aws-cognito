@@ -27,6 +27,7 @@ class AuthLambdaStack(Stack):
             code=a_lambda.Code.from_asset("./lambda"),
             environment={
                 "AWS_REGION" : os.getenv("AWS_REGION"),
+                "AWS_COGNITO_USER_POOL_ID" : os.getenv("AWS_COGNITO_USER_POOL_ID"),
             },
             timeout=Duration.minutes(5),
             memory_size=1024,
