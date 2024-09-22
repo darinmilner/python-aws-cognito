@@ -16,7 +16,7 @@ management_router = APIRouter(prefix="")
 async def user_details(email: EmailStr, cognito: AWSCognito = Depends(get_aws_cognito)):
     return AuthService.user_details(email, cognito)
 
-
+# Email confirmation endpoint
 @management_router.post("/code")
 async def validate_code(request: Request, code: str = Form(...) , email: EmailStr = Form(...),  cognito: AWSCognito = Depends(get_aws_cognito)):
     errors = []
@@ -32,23 +32,12 @@ async def validate_code(request: Request, code: str = Form(...) , email: EmailSt
         return templates.TemplateResponse("input-code.html", ctx)
     
 
-@management_router.post('/verifyaccount', status_code=status.HTTP_200_OK, tags=["Account Management"])
+@management_router.post('/verify-account', status_code=status.HTTP_200_OK, tags=["Account Management"])
 async def verify_account(
     data: UserVerify,
     cognito: AWSCognito = Depends(get_aws_cognito),
 ):
     return AuthService.verify_account(data, cognito)
-
-# FORGOT PASSWORD
-@management_router.post('/forgot-password', status_code=status.HTTP_200_OK, tags=["Account Management"])
-async def forgot_password(email: EmailStr, cognito: AWSCognito = Depends(get_aws_cognito)):
-    return AuthService.change_password(email, cognito)
-
-
-# CONFIRM FORGOT PASSWORD
-@management_router.post('/confirm-forgot-password', status_code=status.HTTP_200_OK, tags=["Account Management"])
-async def confirm_forgot_password(data: ConfirmForgotPassword, cognito: AWSCognito = Depends(get_aws_cognito)):
-    return AuthService.confirm_forgot_password(data, cognito)
 
 
 # CHANGE PASSWORD

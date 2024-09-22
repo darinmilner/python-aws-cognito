@@ -36,7 +36,7 @@ class AuthService:
 
     def resend_confirmation_code(email: EmailStr, cognito: AWSCognito):
         try:
-            response = cognito.check_user_exists(email)
+            cognito.check_user_exists(email)
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'UserNotFoundException':
                 raise HTTPException(
@@ -45,7 +45,7 @@ class AuthService:
                 raise HTTPException(status_code=500, detail="Internal Server Error")
         else:
             try:
-                response = cognito.resend_confirmation_code(email)
+                cognito.resend_confirmation_code(email)
             except botocore.exceptions.ClientError as e:
                 if e.response['Error']['Code'] == 'UserNotFoundException':
                     raise HTTPException(
@@ -62,7 +62,7 @@ class AuthService:
 
     def forgot_password(email: EmailStr, cognito: AWSCognito):
         try:
-            response = cognito.forgot_password(email)
+            cognito.forgot_password(email)
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'UserNotFoundException':
                 raise HTTPException(
@@ -77,7 +77,7 @@ class AuthService:
 
     def confirm_forgot_password(data: ConfirmForgotPassword, cognito: AWSCognito):
         try:
-            response = cognito.confirm_forgot_password(data)
+            cognito.confirm_forgot_password(data)
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'ExpiredCodeException':
                 raise HTTPException(
@@ -92,7 +92,7 @@ class AuthService:
 
     def change_password(data: ChangePassword, cognito: AWSCognito):
         try:
-            response = cognito.change_password(data)
+            cognito.change_password(data)
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == 'InvalidParameterException':
                 raise HTTPException(

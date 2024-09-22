@@ -73,6 +73,7 @@ class AWSCognito:
 
         return response 
 
+    # TODO: fix typo
     def forgot_password(self, email: EmailStr):
         response = self.client.forgot_password(
             clientId = AWS_COGNITO_APP_CLIENT_ID,

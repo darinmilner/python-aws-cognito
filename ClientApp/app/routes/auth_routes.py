@@ -150,12 +150,12 @@ async def logout(request: Request):
        return RedirectResponse(url=url)
     return RedirectResponse(url="/")
 
-#Forced password change endpoint
+#Force password change endpoint
+# TODO: move to user management routes
 @auth_router.post("/forgot-password", tags = ["Auth"])
 async def forgot_password(request: Request, email:EmailStr = Form(...)):
-    c = Cognito(AWS_COGNITO_POOL_ID, AWS_COGNITO_CLIENT_ID, username=email)
     try:
-        c.forgot_password(email)
+        AuthService.forgot_password(email)
     except botocore.exceptions.ClientError as e:
         print(e)
         if e.response['Error']['Code'] == 'UserNotFoundException':
@@ -166,12 +166,13 @@ async def forgot_password(request: Request, email:EmailStr = Form(...)):
                 status_code=403, detail="Unverified account")
         else:
             raise HTTPException(status_code=500, detail="Internal Server Error")
-        return templates.TemplateResponse(
-            "forgotpassword.html", {"request": request, "errors": ["Something went wrong"]}
-        )
+        # return templates.TemplateResponse(
+        #     "forgotpassword.html", {"request": request, "errors": ["Something went wrong"]}
+        # )
     return RedirectResponse(url="/api/forgot-password/code")
 
 #Get function for password change endpoint
+# TODO: move to user management routes
 @auth_router.get("/forgot-password", tags = ["Auth"])
 async def display_forgot_password(request: Request):
     ctx = {"request": request}
@@ -185,6 +186,7 @@ async def display_forgot_password_code(request: Request):
     return templates.TemplateResponse("forgotpasswordcode.html", ctx)
 
 #Get Code function for password change endpoint
+# TODO: Move to user management routes
 @auth_router.post("/forgot-password/code", tags = ["Auth"])
 async def forgot_password_code(request: Request, email:EmailStr = Form(...), code:str = Form(...)):
     c = Cognito(AWS_COGNITO_POOL_ID, AWS_COGNITO_CLIENT_ID, username=email)

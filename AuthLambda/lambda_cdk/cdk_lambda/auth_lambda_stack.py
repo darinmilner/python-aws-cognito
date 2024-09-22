@@ -10,14 +10,12 @@ from aws_cdk import(
 from dotenv import load_dotenv
 from constructs import Construct
 
-
 load_dotenv()
 
 class AuthLambdaStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
       
-        
         # Lambda Function for the Django Scim App
         auth_lambda = a_lambda.Function(
             self, 

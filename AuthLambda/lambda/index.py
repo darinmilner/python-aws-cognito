@@ -2,22 +2,20 @@ import logging
 import json
 from auth import get_credentials_from_token
 
-
 logger = logging.getLogger()
-
 
 def lambda_handler(event, context):
     """
         Example auth event with bearer token
         event = {
-            "Headers" : {
+            "headers" : {
             "Authorization" : "Bearer 1234567.fgdfgd.io90"
         }
     }
     """ 
     logger.info(event)
   
-    headers = event["Headers"]    
+    headers = event["headers"]    
     try:
         get_credentials_from_token(headers=headers)
         return json.dumps({
