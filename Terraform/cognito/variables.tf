@@ -16,7 +16,7 @@ variable "callback-url" {
   default     = "http://localhost:8000/callback"
 }
 
-variable userpool-name {
+variable "userpool-name" {
   description = "Cognito User Pool Name"
   type        = string
   default     = "magnolia-app-userpool"
