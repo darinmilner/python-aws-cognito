@@ -110,3 +110,4 @@ def lambda_handler(event, context):
 
     json_resp = json.dumps(res)
     return json_resp
+  
