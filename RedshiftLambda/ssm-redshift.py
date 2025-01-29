@@ -16,7 +16,7 @@ response = client.describe_statement(Id=query_id)
 while True:
     response = client.describe_statement(Id=query_id)
     if (response["Status"] == "FINISJHED"):
-        print(f"Query status {response["Status"]}")
+        print(f"Query status {response['Status']}")
         break 
     else:
         print(f"Query status {response["Status"]}")

@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from  urllib  import parse as url_parse 
+from urllib import parse as url_parse
 from dataclasses_json import dataclass_json
 from fastapi import Depends, HTTPException, Request, status
-from fastapi.security import (  
-   # OAuth2PasswordBearer,
+from fastapi.security import (
+    # OAuth2PasswordBearer,
     HTTPAuthorizationCredentials,
     HTTPBearer,
 )
@@ -23,6 +23,7 @@ AWS_COGNITO_HOSTED_UI_LOGOUT_URL = env_vars.AWS_COGNITO_HOSTED_UI_LOGOUT_URL
 
 bearer_scheme = HTTPBearer()
 
+
 @dataclass_json
 @dataclass
 class Credentials:
@@ -34,7 +35,7 @@ class Credentials:
 
 
 def verify_jwt(credentials: Credentials) -> bool:
-    try: 
+    try:
         public_key = JWK_CACHE[credentials.header["kid"]]
     except KeyError:
         raise HTTPException(
@@ -66,7 +67,7 @@ def get_user_from_session(request: Request) -> Credentials:
         raise HTTPException(
             status_code=status.HTTP_307_TEMPORARY_REDIRECT,
             headers={"Location": request.url_for("login")},
-        )      
+        )
     else:
         creds = Credentials.from_dict(c)
 
@@ -94,7 +95,6 @@ async def get_credentials_from_token(
     if not verify_jwt(credentials):
         raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="JWK invalid")
     return credentials
-
 
 
 def get_hosted_url(

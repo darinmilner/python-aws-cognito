@@ -3,7 +3,7 @@ import logging
 LOG_LEVEL: str = "DEBUG"
 FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 logging_config = {
-    "version": 1, # mandatory field
+    "version": 1,  # mandatory field
     "formatters": {
         "basic": {
             "format": FORMAT,
@@ -25,9 +25,10 @@ logging_config = {
     },
 }
 
+
 def init_loggers():
     # create logger
-    logger = logging.getLogger('cognito-api')
+    logger = logging.getLogger("cognito-api")
     logger.setLevel(logging.DEBUG)
 
     # create console handler and set level to debug
@@ -35,7 +36,9 @@ def init_loggers():
     ch.setLevel(logging.DEBUG)
 
     # create formatter
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
 
     # add formatter to ch
     ch.setFormatter(formatter)
@@ -44,10 +47,10 @@ def init_loggers():
     logger.addHandler(ch)
 
     # 'application' code
-    logger.debug('debug message')
-    logger.info('info message')
-    logger.warning('warn message')
-    logger.error('error message')
-    logger.critical('critical message')
-    
+    logger.debug("debug message")
+    logger.info("info message")
+    logger.warning("warn message")
+    logger.error("error message")
+    logger.critical("critical message")
+
     return logger
