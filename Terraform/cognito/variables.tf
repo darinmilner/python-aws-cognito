@@ -21,3 +21,19 @@ variable "userpool-name" {
   type        = string
   default     = "magnolia-app-userpool"
 }
+
+variable "allowed_ips" {
+  description = "List of allowed IP addresses/CIDR blocks"
+  type        = list(string)
+  default     = ["192.168.1.0/24", "10.0.0.0/16"] # Replace with your network IPs
+}
+
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
+}
+
+variable "subnet_ids" {
+  description = "List of Subnet IDs"
+  type        = list(string)
+}

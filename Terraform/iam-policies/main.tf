@@ -43,7 +43,7 @@ EOF
 
 # Attach the policy to the Redshift role
 resource "aws_iam_role_policy_attachment" "attach-s3" {
-  count = 1
+  count      = 1
   role       = var.create-policy ? data.aws_iam_role.admin-test[count.index].arn : aws_iam_role.role.name
-  policy_arn = data.aws_iam_policy.policy.arn 
+  policy_arn = data.aws_iam_policy.policy.arn
 }

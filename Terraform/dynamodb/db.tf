@@ -20,7 +20,7 @@ resource "aws_dynamodb_table" "db-table" {
     type = "N"
   }
 
-# change secondary index
+  # change secondary index
   global_secondary_index {
     name               = "product-name-index"
     hash_key           = "name"
