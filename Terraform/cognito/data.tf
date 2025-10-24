@@ -5,3 +5,7 @@
 # data "aws_iam_role" "admin-test" {
 #   name = "redshift-glue-assume-role-${local.short-region}"
 # }
+
+data "aws_acm_certificate" "cognito" {
+ arn = var.certificate_arn
+}

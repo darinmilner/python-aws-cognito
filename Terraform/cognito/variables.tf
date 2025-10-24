@@ -37,3 +37,8 @@ variable "subnet_ids" {
   description = "List of Subnet IDs"
   type        = list(string)
 }
+
+variable "certificate_arn" {
+  description = "ARN of Certificate for Cognito domain"
+  type = string
+}
