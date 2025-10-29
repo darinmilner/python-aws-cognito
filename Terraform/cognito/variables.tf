@@ -28,17 +28,28 @@ variable "allowed_ips" {
   default     = ["192.168.1.0/24", "10.0.0.0/16"] # Replace with your network IPs
 }
 
-variable "vpc_id" {
-  description = "VPC ID"
-  type        = string
+# variable "vpc_id" {
+#   description = "VPC ID"
+#   type        = string
+# }
+
+# variable "subnet_ids" {
+#   description = "List of Subnet IDs"
+#   type        = list(string)
+# }
+
+# variable "domain" {
+#   description = "Domain of Certificate for Cognito domain"
+#   type        = string
+# }
+
+variable "waf_log_retention_days" {
+  description = "Number of days to retain logs"
+  type        = number
+  default     = 30
 }
 
-variable "subnet_ids" {
-  description = "List of Subnet IDs"
-  type        = list(string)
-}
-
-variable "certificate_arn" {
-  description = "ARN of Certificate for Cognito domain"
-  type = string
-}
+# variable "account_id" {
+#   description = "Account ID"
+#   type        = string
+# }

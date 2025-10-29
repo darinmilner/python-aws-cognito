@@ -10,11 +10,10 @@ resource "aws_wafv2_ip_set" "allowed_ips" {
   }
 }
 
-# WAF Web ACL (REGIONAL scope for ALB)
 resource "aws_wafv2_web_acl" "cognito_waf" {
   name        = "cognito-ip-restriction-alb"
   description = "WAF for Cognito IP restriction on ALB"
-  scope       = "REGIONAL" # Required for ALB
+  scope       = "REGIONAL"
 
   default_action {
     block {}
@@ -49,5 +48,43 @@ resource "aws_wafv2_web_acl" "cognito_waf" {
 
   tags = {
     Name = "cognito-ip-restriction-alb"
+  }
+}
+
+# SEPARATE WAF Logging Configuration Resource
+resource "aws_wafv2_web_acl_logging_configuration" "cognito_waf_logs" {
+  log_destination_configs = [aws_cloudwatch_log_group.waf_logs.arn]
+  resource_arn            = aws_wafv2_web_acl.cognito_waf.arn
+
+  # Optional: Redact sensitive fields
+  redacted_fields {
+    single_header {
+      name = "authorization"
+    }
+  }
+
+  redacted_fields {
+    single_header {
+      name = "cookie"
+    }
+  }
+
+  # Optional: Redact query string
+  redacted_fields {
+    query_string {}
+  }
+
+  depends_on = [aws_cloudwatch_log_group.waf_logs]
+}
+
+
+# CloudWatch Log Group for WAF
+resource "aws_cloudwatch_log_group" "waf_logs" {
+  name              = "aws-waf-logs-cognito-waf"
+  retention_in_days = var.waf_log_retention_days
+  kms_key_id        = aws_kms_key.waf_logs.arn
+
+  tags = {
+    Name = "waf-logs-cognito"
   }
 }
